@@ -144,7 +144,7 @@ fun Clock(
                             angleInRad
                         ) + center.y
                     drawText(
-                        i.toString(),
+                        (i / 5).toString(),
                         textX,
                         textY,
                         Paint().apply {
