@@ -26,6 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.test.canvas_course.ui.DetectingTouch
 import com.test.canvas_course.ui.clock.MyClock
+import com.test.canvas_course.ui.linechart.LineChart
+import com.test.canvas_course.ui.linechart.MyLineChart
 import com.test.canvas_course.ui.scale.MyScale
 import com.test.canvas_course.ui.scale.Scale
 import com.test.canvas_course.ui.theme.CanvascourseTheme
@@ -35,7 +37,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             // A surface container using the 'background' color from the theme
-            MyClock()
+            MyLineChart()
         }
     }
 
