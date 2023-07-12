@@ -6,15 +6,16 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.test.canvas_course.ui.DetectingTouch
+import com.test.canvas_course.ui.images.ImageBlendModes
+import com.test.canvas_course.ui.images.ImageBlendQuiz
 import com.test.canvas_course.ui.theme.CanvascourseTheme
-import com.test.canvas_course.ui.tictactoe.TicTacToeGame
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             // A surface container using the 'background' color from the theme
-            TicTacToeGame()
+            ImageBlendQuiz()
         }
     }
 
