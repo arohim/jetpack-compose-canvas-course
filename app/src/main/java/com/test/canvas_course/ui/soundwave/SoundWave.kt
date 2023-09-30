@@ -5,10 +5,10 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun SoundWaveContainer() {
-    val amplitudes = List(1_000) {
+    val amplitudes = List(2_000) {
         (100..800).random()
     }
 //    val amplitudes = listOf(100, 50)
@@ -40,10 +40,19 @@ fun SoundWaveContainer() {
     Column(
         modifier = Modifier
             .background(Color.Black)
-            .padding(top = 100.dp)
             .fillMaxSize()
     ) {
-        SoundWave(amplitudes)
+        SoundWave(List(2_000) {
+            (100..800).random()
+        })
+        Spacer(modifier = Modifier.height(1.dp))
+        SoundWave(List(1_500) {
+            (80..400).random()
+        }, barColor = Color.Red)
+        Spacer(modifier = Modifier.height(1.dp))
+        SoundWave(List(2_000) {
+            (500..1000).random()
+        }, barColor = Color.Cyan)
     }
 
 }
@@ -56,14 +65,17 @@ fun Dp.dpToPx() = with(LocalDensity.current) { this@dpToPx.toPx() }
 fun Int.pxToDp() = with(LocalDensity.current) { this@pxToDp.toDp() }
 
 @Composable
-fun SoundWave(amplitudes: List<Int>) {
-    val barColor = Color.Green
-    val lineColor = Color.White
+fun SoundWave(
+    amplitudes: List<Int>,
+    barColor: Color = Color.Green,
+    lineColor: Color = Color.White,
+    bgColor: Color = barColor.copy(alpha = 0.35f)
+) {
     val width = 0.5f
     val space = 0.5f
     val waveWidth = amplitudes.size * (space + width)
     var startSelectionOffsetX by remember { mutableStateOf(0f) }
-    var selectingWidth by remember { mutableStateOf(waveWidth - 500f) }
+    var selectingWidth by remember { mutableStateOf(waveWidth) }
 //    val selectingBarCount = try {
 //        selectingWidth / (space + width)
 //    } catch (e: Exception) {
@@ -72,7 +84,6 @@ fun SoundWave(amplitudes: List<Int>) {
 //    val selectedAmps = amplitudes.take(selectingBarCount.toInt())
 
     val strokeWidth = 3.dp.dpToPx()
-    val bgColor = barColor.copy(alpha = 0.35f)
     val cornerRadius = 8.dp
     val cornerRadiusPx = cornerRadius.dpToPx()
 
