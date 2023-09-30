@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -54,7 +56,8 @@ fun SoundWave(amplitudes: List<Int>) {
     val waveWidth = amplitudes.size * (space + width)
     val strokeWidth = 2.dp.dpToPx()
     val bgColor = barColor.copy(alpha = 0.35f)
-    val cornerRadius = 5.dp.dpToPx()
+    val cornerRadius = 5.dp
+    val cornerRadiusPx = cornerRadius.dpToPx()
     Canvas(
         modifier = Modifier
             .padding(top = 10.dp, start = 6.dp, end = 6.dp)
@@ -75,32 +78,38 @@ fun SoundWave(amplitudes: List<Int>) {
                 )
             }
             val indicator = Path().apply {
-                moveTo(cornerRadius, 0f)
-                lineTo(size.width - cornerRadius, 0f)
+                moveTo(cornerRadiusPx, 0f)
+                lineTo(waveWidth - cornerRadiusPx, 0f)
                 cubicTo(
-                    size.width - cornerRadius, 0f,
-                    size.width, 0f,
-                    size.width, cornerRadius
+                    waveWidth - cornerRadiusPx, 0f,
+                    waveWidth, 0f,
+                    waveWidth, cornerRadiusPx
                 )
-                lineTo(size.width, size.height - cornerRadius)
+                lineTo(waveWidth, size.height - cornerRadiusPx)
                 cubicTo(
-                    size.width, size.height - cornerRadius,
-                    size.width, size.height,
-                    size.width - cornerRadius, size.height
+                    waveWidth, size.height - cornerRadiusPx,
+                    waveWidth, size.height,
+                    waveWidth - cornerRadiusPx, size.height
                 )
-                lineTo(cornerRadius, size.height)
+                lineTo(cornerRadiusPx, size.height)
                 cubicTo(
-                    cornerRadius, size.height,
+                    cornerRadiusPx, size.height,
                     0f, size.height,
-                    0f, size.height - cornerRadius
+                    0f, size.height - cornerRadiusPx
                 )
-                lineTo(0f, cornerRadius)
+                lineTo(0f, cornerRadiusPx)
                 cubicTo(
-                    0f, cornerRadius,
+                    0f, cornerRadiusPx,
                     0f, 0f,
-                    cornerRadius, 0f
+                    cornerRadiusPx, 0f
                 )
             }
+            drawRoundRect(
+                color = bgColor,
+                topLeft = Offset(0f, 0f),
+                size = Size(waveWidth, size.height),
+                cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx)
+            )
             drawPath(
                 path = indicator,
                 color = lineColor,
@@ -113,7 +122,7 @@ fun SoundWave(amplitudes: List<Int>) {
             drawCircle(
                 color = lineColor,
                 5.dp.toPx(),
-                center = Offset(size.width, size.height / 2f)
+                center = Offset(waveWidth, size.height / 2f)
             )
 //            drawLine(
 //                color = Color.Red,
