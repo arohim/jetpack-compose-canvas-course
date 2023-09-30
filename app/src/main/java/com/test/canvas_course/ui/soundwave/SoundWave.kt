@@ -131,6 +131,10 @@ fun SoundWave(amplitudes: List<Int>) {
                                 " isWithInEndSelection:$isWithInEndSelection"
                     )
 
+                    val isWithInTheBox =
+                        startDraggingOffset!!.x in startSelectionOffsetX..startingOfTheEndOffsetX
+
+
                     if (isWithInEndSelection) {
                         val changeAmountX = change.position.x - startSelectionOffsetX
                         selectingWidth = if (changeAmountX <= waveWidth) {
@@ -154,6 +158,15 @@ fun SoundWave(amplitudes: List<Int>) {
                         val moveAmountX = startSelectionOffsetX - newStartSelectionOffsetX
                         startSelectionOffsetX = newStartSelectionOffsetX
                         selectingWidth += moveAmountX
+                        startDraggingOffset = change.position
+                    } else if (isWithInTheBox) {
+                        val newStartSelectionOffsetX = startSelectionOffsetX + dragAmount.x
+                        startSelectionOffsetX = if (newStartSelectionOffsetX <= 0f)
+                            0f
+                        else if (newStartSelectionOffsetX + selectingWidth >= waveWidth)
+                            startSelectionOffsetX
+                        else
+                            newStartSelectionOffsetX
                         startDraggingOffset = change.position
                     }
                 }
