@@ -1,5 +1,8 @@
 This is the source code I was learning Canvas from this [course](https://elopage.com/payer/s/philipplackner/courses/canvas-masterclass-for-jetpack-compose?course_session_id=5563229&lesson_id=1190213) and other sources
 
+## Sound wave with a region selection
+[soundwave](https://github.com/arohim/jetpack-compose-canvas-course/assets/4177366/271e17d9-ca2b-4c7d-b246-ef30d1b261b6)
+
 ## Clock 
 https://github.com/arohim/jetpack-compose-canvas-course/assets/4177366/6ef0bc60-0c3b-4225-b1d3-3c45ac780158
 
