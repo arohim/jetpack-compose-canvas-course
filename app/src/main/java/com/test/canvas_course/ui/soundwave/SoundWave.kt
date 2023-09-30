@@ -103,44 +103,58 @@ fun SoundWave(amplitudes: List<Int>) {
                         )
                     }
                 ) { change, dragAmount ->
-                    // end of the wave
+                    val startOfStartTouchBox = startSelectionOffsetX - selectionBoxWidth
+                    val endOfStartTouchBox = startSelectionOffsetX + selectionBoxWidth
+
                     val endOfEndTouchBox = startingOfTheEndOffsetX + selectionBoxWidth
-                    val starOfEndTouchBox = startingOfTheEndOffsetX - selectionBoxWidth
+                    val startOfEndTouchBox = startingOfTheEndOffsetX - selectionBoxWidth
+
+                    // start of the wave
+                    val isWithInStartSelection =
+                        startDraggingOffset!!.x in startOfStartTouchBox..endOfStartTouchBox
+                                && startDraggingOffset!!.x < startOfEndTouchBox + selectionBoxWidth
+
+                    // end of the wave
                     Log.d(
                         "Touch area onDrag",
-                        change.position.toString() + " starOfEndTouchBox:$starOfEndTouchBox" +
+                        change.position.toString() + " starOfEndTouchBox:$startOfEndTouchBox" +
                                 " endOfEndTouchBox:$endOfEndTouchBox"
                     )
                     val isWithInEndSelection =
-                        startDraggingOffset!!.x in starOfEndTouchBox..endOfEndTouchBox
+                        startDraggingOffset!!.x in startOfEndTouchBox..endOfEndTouchBox
                                 && startDraggingOffset!!.x <= waveWidth
+                                && startDraggingOffset!!.x > endOfStartTouchBox + selectionBoxWidth
 
-                    val startOfStartTouchBox = startSelectionOffsetX - selectionBoxWidth
-                    val endOfStartTouchBox = startSelectionOffsetX + selectionBoxWidth
-                    val isWithInStartSelection =
-                        startDraggingOffset!!.x in startOfStartTouchBox..endOfStartTouchBox
                     Log.d(
                         "Touch area onDrag",
-                        change.position.toString() + " isWithInStartSelection:$isWithInStartSelection isWithInEndSelection:$isWithInEndSelection"
+                        change.position.toString() + " isWithInStartSelection:$isWithInStartSelection" +
+                                " isWithInEndSelection:$isWithInEndSelection"
                     )
+
                     if (isWithInEndSelection) {
+                        val changeAmountX = change.position.x - startSelectionOffsetX
+                        selectingWidth = if (changeAmountX <= waveWidth) {
+                            if (change.position.x > endOfStartTouchBox)
+                                changeAmountX
+                            else
+                                changeAmountX + selectionBoxWidth
+                        } else {
+                            waveWidth
+                        }
                         startDraggingOffset = change.position
-                        selectingWidth =
-                            if ((change.position.x - startSelectionOffsetX) <= waveWidth) {
-                                change.position.x - startSelectionOffsetX
-                            } else {
-                                waveWidth
-                            }
                     } else if (isWithInStartSelection) {
-                        startDraggingOffset = change.position
                         val newStartSelectionOffsetX = if (change.position.x >= 0f) {
-                            change.position.x
+                            if (change.position.x < startOfEndTouchBox)
+                                change.position.x
+                            else
+                                startOfEndTouchBox - selectionBoxWidth
                         } else {
                             0f
                         }
                         val moveAmountX = startSelectionOffsetX - newStartSelectionOffsetX
                         startSelectionOffsetX = newStartSelectionOffsetX
                         selectingWidth += moveAmountX
+                        startDraggingOffset = change.position
                     }
                 }
             },
