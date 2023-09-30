@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.Button
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
@@ -39,7 +40,11 @@ fun DetectingTouch() {
     var isTimerRunning by remember {
         mutableStateOf(false)
     }
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier
+            .safeDrawingPadding()
+            .fillMaxSize()
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
