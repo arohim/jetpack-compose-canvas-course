@@ -6,8 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.test.canvas_course.ui.DetectingTouch
-import com.test.canvas_course.ui.images.ImageBlendModes
-import com.test.canvas_course.ui.images.ImageBlendQuiz
+import com.test.canvas_course.ui.soundwave.SoundWaveContainer
 import com.test.canvas_course.ui.theme.CanvascourseTheme
 
 class MainActivity : ComponentActivity() {
@@ -15,7 +14,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             // A surface container using the 'background' color from the theme
-            ImageBlendQuiz()
+            SoundWaveContainer()
         }
     }
 
