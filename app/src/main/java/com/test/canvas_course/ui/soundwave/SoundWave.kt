@@ -31,6 +31,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import java.lang.Exception
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 @Composable
 fun SoundWaveContainer() {
@@ -41,8 +44,9 @@ fun SoundWaveContainer() {
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
             .background(Color.Black)
+            .padding(top = 10.dp, start = 24.dp, end = 6.dp)
+            .fillMaxSize()
     ) {
         SoundWave(amplitudes)
     }
@@ -64,48 +68,74 @@ fun SoundWave(amplitudes: List<Int>) {
     val width = 0.5f
     val space = 0.5f
     val waveWidth = amplitudes.size * (space + width)
-    var selectingWidth by remember { mutableStateOf(waveWidth) }
-    var selectingBarCount = selectingWidth / (space + width)
-    val selectedAmps = amplitudes.take(selectingBarCount.toInt())
+    var selectingWidth by remember { mutableStateOf(waveWidth - 500f) }
+//    val selectingBarCount = try {
+//        selectingWidth / (space + width)
+//    } catch (e: Exception) {
+//        10
+//    }
+//    val selectedAmps = amplitudes.take(selectingBarCount.toInt())
 
-    val strokeWidth = 2.dp.dpToPx()
+    val strokeWidth = 3.dp.dpToPx()
     val bgColor = barColor.copy(alpha = 0.35f)
-    val cornerRadius = 5.dp
+    val cornerRadius = 8.dp
     val cornerRadiusPx = cornerRadius.dpToPx()
 
     var startDraggingOffset: Offset? = null
+    val circlePosition = Offset(selectingWidth, 50.dp.dpToPx())
+    val circleRadius = 10.dp.dpToPx()
+    Log.d("Touch area", "circle=$circlePosition radius:$circleRadius")
     Canvas(
         modifier = Modifier
-            .padding(top = 10.dp, start = 6.dp, end = 6.dp)
             .fillMaxWidth()
             .height(100.dp)
             .pointerInput(Unit) {
                 detectDragGestures(
                     onDragStart = {
                         startDraggingOffset = it
+                        Log.d(
+                            "Touch area onDragStart",
+                            "$startDraggingOffset"
+                        )
                     }) { change, dragAmount ->
+                    // end of the wave
                     val isWithInTouchArea =
                         startDraggingOffset!!.x <= selectingWidth + 40.dp.toPx() &&
                                 startDraggingOffset!!.x >= selectingWidth - 40.dp.toPx() &&
-                                startDraggingOffset!!.x < size.width
-                    Log.d(
-                        "Touch area onDrag",
-                        change.position.toString() + " isWithInTouchArea:$isWithInTouchArea"
-                    )
+                                startDraggingOffset!!.x <= size.width
+                    // the circle
+//                    val sqrt = sqrt(
+//                        (startDraggingOffset!!.x - circlePosition.x).pow(2) +
+//                                (startDraggingOffset!!.y - circlePosition.y).pow(2)
+//                    )
+//                    val isWithInTouchArea = sqrt - 10.dp.toPx() <= circleRadius
+//                    Log.d(
+//                        "Touch area onDrag",
+//                        change.position.toString() + " sqrt:$sqrt isWithInTouchArea:$isWithInTouchArea"
+//                    )
                     if (isWithInTouchArea) {
-                        selectingWidth = change.position.x
                         startDraggingOffset = change.position
+                        selectingWidth = if (change.position.x <= waveWidth) {
+                            change.position.x
+                        } else {
+                            waveWidth
+                        }
                     }
                 }
             },
         onDraw = {
-            selectedAmps.forEachIndexed { i, amp ->
+            amplitudes.forEachIndexed { i, amp ->
                 val normalized = (amp / 4).coerceAtMost(size.height.toInt()).toFloat()
                 val halfAmp = normalized / 2f
                 val halfH = size.height / 2
+                val topLeft = i.toFloat() * (space + width)
+                val color = if (topLeft < selectingWidth)
+                    barColor
+                else
+                    Color.DarkGray
                 drawRect(
-                    color = barColor,
-                    topLeft = Offset(i.toFloat() * (space + width), halfH - halfAmp),
+                    color = color,
+                    topLeft = Offset(topLeft, halfH - halfAmp),
                     size = Size(width, normalized),
                     style = Stroke(
                         cap = StrokeCap.Round
@@ -145,6 +175,11 @@ fun SoundWave(amplitudes: List<Int>) {
                 size = Size(selectingWidth, size.height),
                 cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx)
             )
+            drawRect(
+                color = bgColor.copy(alpha = 0.2f),
+                topLeft = Offset(selectingWidth, 0f),
+                size = Size(waveWidth - selectingWidth, size.height),
+            )
             drawPath(
                 path = indicator,
                 color = lineColor,
@@ -156,8 +191,8 @@ fun SoundWave(amplitudes: List<Int>) {
             )
             drawCircle(
                 color = lineColor,
-                5.dp.toPx(),
-                center = Offset(selectingWidth, size.height / 2f)
+                radius = circleRadius,
+                center = circlePosition
             )
 //            drawLine(
 //                color = Color.Red,
