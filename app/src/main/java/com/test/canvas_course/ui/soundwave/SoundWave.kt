@@ -22,7 +22,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
@@ -101,7 +101,8 @@ fun SoundWave(amplitudes: List<Int>) {
                             "Touch area onDragStart",
                             "$startDraggingOffset"
                         )
-                    }) { change, dragAmount ->
+                    }
+                ) { change, dragAmount ->
                     // end of the wave
                     val endOfEndTouchBox = startingOfTheEndOffsetX + selectionBoxWidth
                     val starOfEndTouchBox = startingOfTheEndOffsetX - selectionBoxWidth
@@ -124,7 +125,6 @@ fun SoundWave(amplitudes: List<Int>) {
                     )
                     if (isWithInEndSelection) {
                         startDraggingOffset = change.position
-//                        selectingWidth -= (change.position.x + startSelectionOffsetX)
                         selectingWidth =
                             if ((change.position.x - startSelectionOffsetX) <= waveWidth) {
                                 change.position.x - startSelectionOffsetX
@@ -145,96 +145,125 @@ fun SoundWave(amplitudes: List<Int>) {
                 }
             },
         onDraw = {
-            amplitudes.forEachIndexed { i, amp ->
-                val normalized = (amp / 4).coerceAtMost(size.height.toInt()).toFloat()
-                val halfAmp = normalized / 2f
-                val halfH = size.height / 2
-                val topLeft = i.toFloat() * (space + width)
-                val color = if (topLeft < selectingWidth)
-                    barColor
-                else
-                    barColor.copy(alpha = 0.2f)
-                drawRect(
-                    color = color,
-                    topLeft = Offset(topLeft, halfH - halfAmp),
-                    size = Size(width, normalized),
-                    style = Stroke(
-                        cap = StrokeCap.Round
-                    )
-                )
-            }
-            val indicator = Path().apply {
-                moveTo(startSelectionOffsetX, cornerRadiusPx)
-                cubicTo(
-                    startSelectionOffsetX, cornerRadiusPx,
-                    startSelectionOffsetX, 0f,
-                    startSelectionOffsetX + cornerRadiusPx, 0f
-                )
-                lineTo(startingOfTheEndOffsetX - cornerRadiusPx, 0f)
-                cubicTo(
-                    startingOfTheEndOffsetX - cornerRadiusPx, 0f,
-                    startingOfTheEndOffsetX, 0f,
-                    startingOfTheEndOffsetX, cornerRadiusPx
-                )
-                lineTo(startingOfTheEndOffsetX, size.height - cornerRadiusPx)
-                cubicTo(
-                    startingOfTheEndOffsetX, size.height - cornerRadiusPx,
-                    startingOfTheEndOffsetX, size.height,
-                    startingOfTheEndOffsetX - cornerRadiusPx, size.height
-                )
-                lineTo(startSelectionOffsetX + cornerRadiusPx, size.height)
-                cubicTo(
-                    startSelectionOffsetX + cornerRadiusPx, size.height,
-                    startSelectionOffsetX, size.height,
-                    startSelectionOffsetX, size.height - cornerRadiusPx
-                )
-                close()
-            }
+            drawAmp(
+                amplitudes,
+                space,
+                width,
+                startSelectionOffsetX,
+                startingOfTheEndOffsetX,
+                barColor
+            )
+            // background
+            drawRect(
+                color = bgColor.copy(alpha = 0.2f),
+                topLeft = Offset(0f, 0f),
+                size = Size(size.width, size.height),
+            )
+            // selecting background
             drawRoundRect(
                 color = bgColor,
-                topLeft = Offset(0f, 0f),
+                topLeft = Offset(startSelectionOffsetX, 0f),
                 size = Size(selectingWidth, size.height),
                 cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx)
             )
-            drawRect(
-                color = bgColor.copy(alpha = 0.2f),
-                topLeft = Offset(selectingWidth, 0f),
-                size = Size(waveWidth - selectingWidth, size.height),
+            // selecting path
+            selectingPath(
+                startSelectionOffsetX,
+                cornerRadiusPx,
+                startingOfTheEndOffsetX,
+                lineColor,
+                strokeWidth,
+                circleRadius,
+                startCirclePosition,
+                endCirclePosition
             )
-            drawPath(
-                path = indicator,
-                color = lineColor,
-                style = Stroke(
-                    width = strokeWidth,
-                    cap = StrokeCap.Round,
-                    join = StrokeJoin.Bevel
-                )
-            )
-            drawCircle(
-                color = lineColor,
-                radius = circleRadius,
-                center = startCirclePosition
-            )
-            drawCircle(
-                color = lineColor,
-                radius = circleRadius,
-                center = endCirclePosition
-            )
-
-            drawRect(
-                color = Color.Red.copy(alpha = 0.8f),
-                topLeft = Offset(startingOfTheEndOffsetX - selectionBoxWidth, 0f),
-                size = Size(selectionBoxWidth * 2, size.height)
-            )
-//            drawLine(
-//                color = Color.Red,
-//                start = Offset(size.width, 0f),
-//                end = Offset(size.width, size.height),
-//                strokeWidth = 5.dp.toPx(),
-//                cap = StrokeCap.Round,
-//            )
         }
     )
+}
+
+private fun DrawScope.selectingPath(
+    startSelectionOffsetX: Float,
+    cornerRadiusPx: Float,
+    startingOfTheEndOffsetX: Float,
+    lineColor: Color,
+    strokeWidth: Float,
+    circleRadius: Float,
+    startCirclePosition: Offset,
+    endCirclePosition: Offset
+) {
+    val indicator = Path().apply {
+        moveTo(startSelectionOffsetX, cornerRadiusPx)
+        cubicTo(
+            startSelectionOffsetX, cornerRadiusPx,
+            startSelectionOffsetX, 0f,
+            startSelectionOffsetX + cornerRadiusPx, 0f
+        )
+        lineTo(startingOfTheEndOffsetX - cornerRadiusPx, 0f)
+        cubicTo(
+            startingOfTheEndOffsetX - cornerRadiusPx, 0f,
+            startingOfTheEndOffsetX, 0f,
+            startingOfTheEndOffsetX, cornerRadiusPx
+        )
+        lineTo(startingOfTheEndOffsetX, size.height - cornerRadiusPx)
+        cubicTo(
+            startingOfTheEndOffsetX, size.height - cornerRadiusPx,
+            startingOfTheEndOffsetX, size.height,
+            startingOfTheEndOffsetX - cornerRadiusPx, size.height
+        )
+        lineTo(startSelectionOffsetX + cornerRadiusPx, size.height)
+        cubicTo(
+            startSelectionOffsetX + cornerRadiusPx, size.height,
+            startSelectionOffsetX, size.height,
+            startSelectionOffsetX, size.height - cornerRadiusPx
+        )
+        close()
+    }
+    drawPath(
+        path = indicator,
+        color = lineColor,
+        style = Stroke(
+            width = strokeWidth,
+            cap = StrokeCap.Butt
+        )
+    )
+    drawCircle(
+        color = lineColor,
+        radius = circleRadius,
+        center = startCirclePosition
+    )
+    drawCircle(
+        color = lineColor,
+        radius = circleRadius,
+        center = endCirclePosition
+    )
+}
+
+fun DrawScope.drawAmp(
+    amplitudes: List<Int>,
+    space: Float,
+    width: Float,
+    startSelectionOffsetX: Float,
+    startingOfTheEndOffsetX: Float,
+    barColor: Color
+) {
+    amplitudes.forEachIndexed { i, amp ->
+        val normalized = (amp / 4).coerceAtMost(size.height.toInt()).toFloat()
+        val halfAmp = normalized / 2f
+        val halfH = size.height / 2
+        val topLeft = i.toFloat() * (space + width)
+        val color = if (topLeft in startSelectionOffsetX..startingOfTheEndOffsetX) {
+            barColor
+        } else
+            barColor.copy(alpha = 0.2f)
+        drawRect(
+            color = color,
+            topLeft = Offset(topLeft, halfH - halfAmp),
+            size = Size(width, normalized),
+            style = Stroke(
+                cap = StrokeCap.Round
+            )
+        )
+    }
 }
 
 @Preview
