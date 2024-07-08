@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:swagpoints="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <com.test.canvas_course.ui.counter.CounterView
+        android:id="@+id/counterView"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        swagpoints:arcColor="@color/color_arc"
+        swagpoints:arcWidth="16dp"
+        swagpoints:indicatorIcon="@drawable/indicator"
+        swagpoints:max="1000"
+        swagpoints:min="100"
+        swagpoints:progressColor="@color/color_progress"
+        swagpoints:progressWidth="12dp"
+        swagpoints:step="100"
+        swagpoints:textColor="#CC11EE"
+        swagpoints:textSize="36sp" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Increase" />
+</LinearLayout>
