@@ -15,6 +15,8 @@ https://github.com/arohim/jetpack-compose-canvas-course/assets/4177366/c06cd7cb-
 ## Gender selector
 https://github.com/arohim/jetpack-compose-canvas-course/assets/4177366/729f9845-d902-4fbd-b0dd-56a56af2fc27
 
+## Line graph
+[Screen_recording_20240709_232917.webm](https://github.com/arohim/jetpack-compose-canvas-course/assets/4177366/4aa16005-7948-4d39-8346-9621ab467618)
 
 ## Screenshots
 |                                                   |   |   |
